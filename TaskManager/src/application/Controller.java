@@ -4,19 +4,13 @@ import java.time.format.DateTimeFormatter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
-
-import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -44,6 +38,8 @@ public class Controller {
 	@FXML
 	Button editButton;
 	@FXML
+	Button saveChangesButton;
+	@FXML
 	TextField taskInput;
 	@FXML
 	TextField notesInput;
@@ -54,9 +50,10 @@ public class Controller {
 	DateTimeFormatter formatter;
 	TaskList incompleteTasks;
 	TaskList completeTasks;
-	TaskListManager taskListManager;
-	ArrayList<Integer> incompleteColumns;
-	ArrayList<Integer> completeColumns;	
+	ArrayList<TaskRow> incompleteTaskRows;
+	ArrayList<TaskRow> completeTaskRows;
+	ArrayList<CheckBox> checkBoxes;
+	ArrayList<Text> deleters;
 
 	
 	@FXML
@@ -65,26 +62,14 @@ public class Controller {
 		hasDate = false;
 		incompleteTasks = new TaskList("IncompleteTasks");
 		completeTasks = new TaskList("CompleteTasks");
-		taskListManager = new TaskListManager(incompleteTasks, completeTasks);
-		incompleteColumns = new ArrayList<Integer>();
-		completeColumns = new ArrayList<Integer>();
-		addIncompleteSizes(incompleteColumns);
+		incompleteTaskRows = new ArrayList<TaskRow>();
+		completeTaskRows = new ArrayList<TaskRow>();
+		checkBoxes = new ArrayList<CheckBox>();
+		deleters = new ArrayList<Text>();
+		
 		updateViews();
 	}
 	
-	public void addIncompleteSizes(ArrayList<Integer> list){
-		list.add(150);
-		list.add(230);
-		list.add(55);
-		list.add(20);
-		list.add(20);
-	}
-	
-	public void addCompleteSizes(ArrayList<Integer> list){
-		list.add(150);
-		list.add(230);
-		list.add(75);
-	}
 	
 	public void updateViews(){
 		updateIncompleteView();
@@ -135,60 +120,58 @@ public class Controller {
 	
 	public void updateCompleteView(){
 		completeGridHolder.getChildren().clear();
+		completeTaskRows.clear();
 		GridPane compGrid = new GridPane();
-		setUp(compGrid, completeColumns);
+		setUp(compGrid);
 		for (int taskIndex = 0; taskIndex < completeTasks.getSize(); taskIndex++){
-			updateTaskNoteView(completeTasks.getTaskAt(taskIndex), compGrid, completeTasks);
-			Text compDate = new Text();
-			compDate.setText(getCurrentDate());
-			compGrid.add(compDate, 2, taskIndex);
+			TaskRow taskRow = new TaskRow(compGrid, completeTasks.getTaskAt(taskIndex), taskIndex);
+			taskRow.addTaskNoteToGrid();
+			taskRow.addDateField(getCurrentDate());
+			completeTaskRows.add(taskRow);
 		}
 		completeGridHolder.getChildren().add(compGrid);
 	}
 
 	public void updateIncompleteView(){
 		incompleteGridHolder.getChildren().clear();
+		incompleteTaskRows.clear();
+		checkBoxes.clear();
+		deleters.clear();
 		GridPane incGrid = new GridPane();
-		setUp(incGrid, incompleteColumns);
+		setUp(incGrid);
 		for (int taskIndex = 0; taskIndex < incompleteTasks.getSize(); taskIndex++){
-			updateTaskNoteView(incompleteTasks.getTaskAt(taskIndex), incGrid, incompleteTasks);
-			Text newDateText = new Text();
-			newDateText.setText(incompleteTasks.getDateAt(taskIndex));
-			Text deleteText = new Text();
-			CheckBox checker = new CheckBox();
-			deleteText.setText("  X");
-			final int index = taskIndex;
-			deleteText.setOnMouseClicked(k -> deleteTaskAt(index));
-			checker.setOnAction(k -> completeTaskAt(index));
-			incGrid.add(newDateText, 2, taskIndex);
-			incGrid.add(deleteText, 3, taskIndex);
-			incGrid.add(checker, 4, taskIndex);
+			TaskRow taskRow = new TaskRow(incGrid, incompleteTasks.getTaskAt(taskIndex), taskIndex);
+			taskRow.addTaskNoteToGrid();
+			taskRow.addDateField(incompleteTasks.getDateAt(taskIndex));
+			incompleteTaskRows.add(taskRow);
+			addDeleter(incGrid, taskIndex);
+			addCheckBox(incGrid, taskIndex);
 		}
 		incompleteGridHolder.getChildren().add(incGrid);	
 	}
 	
-	public void updateTaskNoteView(Task task, GridPane grid, TaskList taskList){
-		TextField newTaskText = new TextField();
-		TextField newNoteText = new TextField();
-		newTaskText.setEditable(false);
-		newNoteText.setEditable(false);
-		newTaskText.setPrefSize(150, 25);
-		newNoteText.setPrefSize(225, 25);
-		newTaskText.setText(task.getTaskText());
-		newNoteText.setText(task.getNoteText());
-		grid.add(newTaskText, 0, taskList.getIndexOf(task));
-		grid.add(newNoteText, 1, taskList.getIndexOf(task));
-		
-		
+	public void addCheckBox(GridPane grid, int index){
+		CheckBox checker = new CheckBox();
+		checker.setOnAction(k -> completeTaskAt(index));
+		checker.setTranslateX(2);
+		grid.add(checker, 4, index);
+		checkBoxes.add(checker);
 	}
 	
-	public void setUp(GridPane grid, ArrayList<Integer> columnSizes){
+	public void addDeleter(GridPane grid, int index){
+		Text deleteText = new Text();
+		deleteText.setText(" X ");
+		deleteText.setUnderline(true);
+		deleteText.setOnMouseClicked(k -> deleteTaskAt(index));
+		grid.add(deleteText, 3, index);
+		deleters.add(deleteText);
+	}
+
+	
+	public void setUp(GridPane grid){
 		grid.setGridLinesVisible(true);
 		grid.setLayoutX(5);
 		grid.setLayoutY(5);
-		for (int i = 0; i < columnSizes.size(); i++){
-			grid.getColumnConstraints().add(new ColumnConstraints(columnSizes.get(i)));
-		}
 	}
 	
 	
@@ -205,13 +188,47 @@ public class Controller {
 		completePane.setVisible(false);
 		incompletePane.setVisible(true);
 	}
+
 	
-	void completeTaskAt(int taskIndex){
-		taskListManager.completeTask(taskIndex);
+	@FXML
+	public void toggleEditing(){
+		saveChangesButton.setVisible(!saveChangesButton.isVisible());
+		for (TaskRow t: incompleteTaskRows){
+			t.toggleEditable();
+		}
+		toggleCheckable();
+		toggleDeleteable();
+		clearNewTask();
+		newTaskPane.setVisible(false);
+		addNewTaskButton.setVisible(!addNewTaskButton.isVisible());
+	}
+	
+	@FXML
+	public void saveEdited(){
+		toggleEditing();
+		incompleteTasks.updateTaskList(incompleteTaskRows);
+		
+	}
+	
+	public void toggleCheckable(){
+		for (CheckBox c: checkBoxes){
+			c.setVisible(!c.isVisible());
+		}
+	}
+	
+	public void toggleDeleteable(){
+		for (Text t: deleters){
+			t.setVisible(!t.isVisible());
+		}
+	}
+	
+	public void completeTaskAt(int taskIndex){
+		completeTasks.addTask(incompleteTasks.getTaskAt(taskIndex));
+		incompleteTasks.deleteTaskAt(taskIndex);
 		updateViews();
 	}
 	
-	void deleteTaskAt(int taskIndex){
+	public void deleteTaskAt(int taskIndex){
 		incompleteTasks.deleteTaskAt(taskIndex);
 		updateViews();
 	}

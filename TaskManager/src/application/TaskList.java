@@ -27,11 +27,18 @@ public class TaskList {
 		return taskList.get(index);
 	}
 	
+	public void updateTaskText(int index, String string){
+		getTaskAt(index).updateTaskText(string);
+	}
+	public void updateNoteText(int index, String string){
+		getTaskAt(index).updateNoteText(string);
+	}
+	
 	public String getNoteAt(int index){
 		return taskList.get(index).getNoteText();
 	}
 	public String getDateAt(int index){
-		return taskList.get(index).getDueDate();
+		return taskList.get(index).getDateText();
 	}
 	
 	public void addTask(Task task){
@@ -43,6 +50,38 @@ public class TaskList {
 	public void deleteTaskAt(int index){
 		taskList.remove(index);
 		updateTextDoc();
+	}
+	
+	
+	public void updateTaskList(ArrayList<TaskRow> updatedList){
+		for (int i = 0; i < updatedList.size(); i++){
+			Task oldTask = getTaskAt(i);
+			TaskRow newInput = updatedList.get(i);
+			updateTask(oldTask, newInput.getTaskFieldText());
+			updateNote(oldTask, newInput.getNoteFieldText());
+			updateDate(oldTask, newInput.getDateFieldText());
+		}
+		updateTextDoc();
+	}
+	
+	public void updateTask(Task task, String newText){
+		String oldText = task.getTaskText();
+		if (!newText.equals(oldText)){
+			task.updateTaskText(newText);
+		}
+	}
+	
+	public void updateNote(Task task, String newText){
+		String oldText = task.getNoteText();
+		if (!newText.equals(oldText)){
+			task.updateNoteText(newText);
+		}
+	}
+	public void updateDate(Task task, String newText){
+		String oldText = task.getDateText();
+		if (!newText.equals(oldText)){
+			task.updateDateText(newText);
+		}
 	}
 	
 	public void updateTextDoc(){
@@ -69,7 +108,7 @@ public class TaskList {
 			writer.write("\r\n");
 			writer.write("&/&" + task.getTaskText() + " ");
 			writer.write("*/*" + task.getNoteText() + " ");
-			writer.write("!/!" + task.getDueDate());
+			writer.write("!/!" + task.getDateText());
 		
 			writer.close();
 			} 
