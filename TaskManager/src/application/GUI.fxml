@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.canvas.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="556.0" prefWidth="504.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
+   <center>
+      <Pane prefHeight="550.0" prefWidth="500.0" BorderPane.alignment="CENTER">
+         <children>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" height="1080.0" layoutX="-1.0" strokeLineCap="ROUND" strokeLineJoin="BEVEL" strokeWidth="0.0" width="1444.0">
+               <stroke>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#6b6a6a" />
+                        <Stop color="#b2a8a8" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </stroke>
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#6f8eb9" />
+                        <Stop color="WHITE" offset="0.40364182170083346" />
+                        <Stop color="WHITE" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </fill>
+            </Rectangle>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#51d394" height="1013.0" layoutX="-146.0" layoutY="265.0" opacity="0.51" rotate="-55.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="558.0" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#51d394" height="1603.0" layoutX="281.0" layoutY="-176.0" opacity="0.51" rotate="38.7" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="1345.0" />
+            <Pane fx:id="incompletePane" layoutX="-1.0" layoutY="8.0" prefHeight="549.0" prefWidth="504.0">
+               <children>
+                  <ScrollPane fx:id="incompleteScrollPane" layoutX="7.0" layoutY="84.0" prefHeight="312.0" prefViewportHeight="105.0" prefViewportWidth="487.0" prefWidth="492.0">
+                     <content>
+                        <AnchorPane fx:id="incompleteGridHolder" layoutX="5.0" prefHeight="300.0" prefWidth="485.0" />
+                     </content>
+                  </ScrollPane>
+                  <Text layoutX="168.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Notes">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Text>
+                  <Button fx:id="addNewTaskButton" blendMode="MULTIPLY" layoutX="192.0" layoutY="14.0" mnemonicParsing="false" onAction="#addNewTask" text="+">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <effect>
+                        <Reflection fraction="0.35" />
+                     </effect>
+                  </Button>
+                  <Button fx:id="completeTasksButton" blendMode="MULTIPLY" layoutX="377.0" layoutY="14.0" mnemonicParsing="false" onAction="#viewCompleteTasks" prefHeight="25.0" prefWidth="113.0" text="Complete Tasks">
+                     <effect>
+                        <Reflection fraction="0.35" />
+                     </effect>
+                  </Button>
+                  <Text layoutX="12.0" layoutY="78.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Task">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="incCheck" layoutX="471.0" layoutY="79.0" strokeType="OUTSIDE" strokeWidth="0.0" text="✓">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Text>
+                  <Text layoutX="391.0" layoutY="78.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Text>
+                  <Text layoutX="10.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Incomplete Tasks">
+                     <font>
+                        <Font name="System Bold" size="21.0" />
+                     </font>
+                  </Text>
+                  <Pane fx:id="newTaskPane" layoutX="102.0" layoutY="403.0" prefHeight="132.0" prefWidth="292.0" visible="false">
+                     <children>
+                        <TextField fx:id="taskInput" layoutX="54.5" />
+                        <TextField fx:id="notesInput" layoutX="53.5" layoutY="37.0" prefHeight="25.0" prefWidth="238.0" />
+                        <DatePicker fx:id="dueDatePicker" editable="false" layoutX="54.0" layoutY="68.0" onAction="#dateInputted" prefHeight="25.0" prefWidth="95.0" />
+                        <Button fx:id="saveNewTaskButton" blendMode="MULTIPLY" layoutX="2.0" layoutY="99.0" mnemonicParsing="false" onAction="#saveNewTask" text="Save">
+                           <effect>
+                              <Reflection fraction="0.35" />
+                           </effect>
+                        </Button>
+                        <Text layoutX="5.0" layoutY="17.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Task:" />
+                        <Text layoutX="3.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Notes:" />
+                        <Text layoutX="1.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Due date:" />
+                     </children>
+                  </Pane>
+                  <ImageView fitHeight="22.0" fitWidth="28.0" layoutX="446.0" layoutY="61.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../delete.png" />
+                     </image>
+                  </ImageView>
+                  <Button fx:id="editButton" blendMode="MULTIPLY" layoutX="223.0" layoutY="14.0" mnemonicParsing="false" text="Edit">
+                     <effect>
+                        <Reflection fraction="0.35" />
+                     </effect>
+                  </Button>
+               </children>
+            </Pane>
+            <Pane fx:id="completePane" layoutX="6.0" layoutY="25.0" prefHeight="496.0" prefWidth="490.0" visible="false">
+               <children>
+                  <Text layoutX="161.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Notes">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Text>
+                  <Text layoutX="384.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date" wrappingWidth="30.8779296875">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Text>
+                  <Text layoutX="5.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Task">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Text>
+                  <Button fx:id="incompleteTasksButton" blendMode="MULTIPLY" layoutX="364.0" layoutY="-2.0" mnemonicParsing="false" onAction="#viewIncompleteTasks" prefHeight="25.0" prefWidth="126.0" text="Incomplete Tasks">
+                     <effect>
+                        <Reflection fraction="0.35" />
+                     </effect>
+                  </Button>
+                  <Text layoutX="13.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Complete Tasks">
+                     <font>
+                        <Font name="System Bold" size="21.0" />
+                     </font>
+                  </Text>
+                  <ScrollPane fx:id="completeScrollPane" layoutY="68.0" prefHeight="334.0" prefWidth="488.0">
+                    <content>
+                      <AnchorPane fx:id="completeGridHolder" minHeight="0.0" minWidth="0.0" prefHeight="328.0" prefWidth="471.0" />
+                    </content>
+                  </ScrollPane>
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+   </center>
+</BorderPane>
