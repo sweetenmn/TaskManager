@@ -8,7 +8,7 @@ public class TaskListManager {
 	
 	public TaskListManager(TaskList incomplete, TaskList complete){
 		incompleteList = incomplete;
-		completeList = incomplete;
+		completeList = complete;
 	}
 	
 	public void completeTask(int taskIndex){

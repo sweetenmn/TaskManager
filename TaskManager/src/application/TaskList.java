@@ -8,7 +8,7 @@ import java.io.FileWriter;
 
 public class TaskList {
 	
-	private ArrayList<Task> taskList = new ArrayList<Task>();
+	public ArrayList<Task> taskList = new ArrayList<Task>();
 	private String documentName;
 	
 	public TaskList(String listName){
@@ -95,6 +95,7 @@ public class TaskList {
 	public int getIndexOf(Task task){
 		return taskList.indexOf(task);
 	}
+	
 	//break this up-2 levels 
 	public void readSaved(String line){
 		if (line.startsWith("&/&")){

@@ -62,24 +62,6 @@ public class Controller {
 	ArrayList<Integer> incompleteColumns;
 	ArrayList<Integer> completeColumns;	
 	
-	private long FRAMES_PER_SEC = 30L;
-	
-	private long interval = 1000000000L;
-	private long getInterval(){return interval / FRAMES_PER_SEC;}
-	
-	private AnimationTimer timer = new AnimationTimer() {
-		long last = 0;
-		
-		@Override
-		public void handle(long now) {
-			
-			if (now - last > getInterval()) { 
-				updateViews();
-			}
-		}
-		
-	};
-	
 	
 	@FXML
 	public void initialize(){
@@ -90,7 +72,7 @@ public class Controller {
 		taskListManager = new TaskListManager(incompleteTasks, completeTasks);
 		incompleteColumns = new ArrayList<Integer>();
 		addIncompleteSizes(incompleteColumns);
-		timer.start();
+		updateViews();
 	}
 	
 	public void addIncompleteSizes(ArrayList<Integer> list){
@@ -175,11 +157,43 @@ public class Controller {
 	public void updateIncompleteView(){
 		incompleteGridHolder.getChildren().clear();
 		GridPane incGrid = new GridPane();
-		Grid grid = new Grid(incompleteColumns, incGrid, taskListManager);
-		grid.setUp();
-		grid.addIncompleteTaskView();
+		setUp(incGrid, incompleteColumns);
+		for (int taskIndex = 0; taskIndex < incompleteTasks.getSize(); taskIndex++){
+			Task task = incompleteTasks.getTaskAt(taskIndex);
+			TextField newTaskText = new TextField();
+			TextField newNoteText = new TextField();
+			Text newDateText = new Text();
+			newTaskText.setEditable(false);
+			newNoteText.setEditable(false);
+			newTaskText.setPrefSize(150, 25);
+			newNoteText.setPrefSize(225, 25);
+			newTaskText.setText(task.getTaskText());
+			newNoteText.setText(task.getNoteText());
+			newDateText.setText(task.getDueDate());
+			incGrid.add(newTaskText, 0, taskIndex);
+			incGrid.add(newNoteText, 1, taskIndex);
+			incGrid.add(newDateText, 2, taskIndex);
+			Text deleteText = new Text();
+			deleteText.setText("  X");
+			incGrid.add(deleteText, 3, taskIndex);
+			final int index = taskIndex;
+			deleteText.setOnMouseClicked(k -> deleteTaskAt(index));
+			CheckBox checker = new CheckBox();
+			incGrid.add(checker, 4, taskIndex);
+			checker.setOnAction(k -> completeTaskAt(index));
+		}
 		incompleteGridHolder.getChildren().add(incGrid);	
 	}
+	
+	public void setUp(GridPane grid, ArrayList<Integer> columnSizes){
+		grid.setGridLinesVisible(true);
+		grid.setLayoutX(5);
+		grid.setLayoutY(5);
+		for (int i = 0; i < columnSizes.size(); i++){
+			grid.getColumnConstraints().add(new ColumnConstraints(columnSizes.get(i)));
+		}
+	}
+	
 	
 	@FXML
 	public void viewCompleteTasks(){
@@ -194,15 +208,14 @@ public class Controller {
 		completePane.setVisible(false);
 		incompletePane.setVisible(true);
 	}
-/*	
+	
 	void completeTaskAt(int taskIndex){
 		taskListManager.completeTask(taskIndex);
-		updateCompleteView();
-		updateIncompleteView();
+		updateViews();
 	}
 	
 	void deleteTaskAt(int taskIndex){
 		incompleteTasks.deleteTaskAt(taskIndex);
-		updateIncompleteView();
-	}*/
+		updateViews();
+	}
 }
