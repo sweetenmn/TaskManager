@@ -36,6 +36,7 @@ public class TaskList {
 	
 	public void addTask(Task task){
 		taskList.add(task);
+		updateTextDoc();
 		
 	}
 	
@@ -69,6 +70,7 @@ public class TaskList {
 			writer.write("&/&" + task.getTaskText() + " ");
 			writer.write("*/*" + task.getNoteText() + " ");
 			writer.write("!/!" + task.getDueDate());
+		
 			writer.close();
 			} 
 		catch (IOException e) {
@@ -106,6 +108,7 @@ public class TaskList {
 					stopNote));
 			String dateText = (line.substring(stopNote + 3));
 			taskList.add(new Task(taskText, noteText, dateText));
+			
 			
 		}
 	}

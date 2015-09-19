@@ -34,10 +34,6 @@ public class Controller {
 	@FXML
 	AnchorPane completeGridHolder;
 	@FXML
-	ScrollPane incompleteScrollPane;
-	@FXML
-	ScrollPane completeScrollPane;
-	@FXML
 	Button incompleteTasksButton;
 	@FXML
 	Button completeTasksButton;
@@ -61,7 +57,7 @@ public class Controller {
 	TaskListManager taskListManager;
 	ArrayList<Integer> incompleteColumns;
 	ArrayList<Integer> completeColumns;	
-	
+
 	
 	@FXML
 	public void initialize(){
@@ -71,6 +67,7 @@ public class Controller {
 		completeTasks = new TaskList("CompleteTasks");
 		taskListManager = new TaskListManager(incompleteTasks, completeTasks);
 		incompleteColumns = new ArrayList<Integer>();
+		completeColumns = new ArrayList<Integer>();
 		addIncompleteSizes(incompleteColumns);
 		updateViews();
 	}
@@ -81,6 +78,12 @@ public class Controller {
 		list.add(55);
 		list.add(20);
 		list.add(20);
+	}
+	
+	public void addCompleteSizes(ArrayList<Integer> list){
+		list.add(150);
+		list.add(230);
+		list.add(75);
 	}
 	
 	public void updateViews(){
@@ -133,24 +136,13 @@ public class Controller {
 	public void updateCompleteView(){
 		completeGridHolder.getChildren().clear();
 		GridPane compGrid = new GridPane();
-		compGrid.setGridLinesVisible(true);
-		compGrid.setLayoutX(5);
-		compGrid.setLayoutY(5);
-		compGrid.getColumnConstraints().add(new ColumnConstraints(150));
-		compGrid.getColumnConstraints().add(new ColumnConstraints(230));
-		compGrid.getColumnConstraints().add(new ColumnConstraints(75));
+		setUp(compGrid, completeColumns);
 		for (int taskIndex = 0; taskIndex < completeTasks.getSize(); taskIndex++){
-			Text compTaskText = new Text();
-			compTaskText.setText(completeTasks.getTaskTextAt(taskIndex));
-			compGrid.add(compTaskText, 0, taskIndex);
-			Text compNoteText = new Text();
-			compNoteText.setText(completeTasks.getNoteAt(taskIndex));
-			compGrid.add(compNoteText, 1, taskIndex);
+			updateTaskNoteView(completeTasks.getTaskAt(taskIndex), compGrid, completeTasks);
 			Text compDate = new Text();
 			compDate.setText(getCurrentDate());
 			compGrid.add(compDate, 2, taskIndex);
 		}
-		
 		completeGridHolder.getChildren().add(compGrid);
 	}
 
@@ -159,30 +151,35 @@ public class Controller {
 		GridPane incGrid = new GridPane();
 		setUp(incGrid, incompleteColumns);
 		for (int taskIndex = 0; taskIndex < incompleteTasks.getSize(); taskIndex++){
-			Task task = incompleteTasks.getTaskAt(taskIndex);
-			TextField newTaskText = new TextField();
-			TextField newNoteText = new TextField();
+			updateTaskNoteView(incompleteTasks.getTaskAt(taskIndex), incGrid, incompleteTasks);
 			Text newDateText = new Text();
-			newTaskText.setEditable(false);
-			newNoteText.setEditable(false);
-			newTaskText.setPrefSize(150, 25);
-			newNoteText.setPrefSize(225, 25);
-			newTaskText.setText(task.getTaskText());
-			newNoteText.setText(task.getNoteText());
-			newDateText.setText(task.getDueDate());
-			incGrid.add(newTaskText, 0, taskIndex);
-			incGrid.add(newNoteText, 1, taskIndex);
-			incGrid.add(newDateText, 2, taskIndex);
+			newDateText.setText(incompleteTasks.getDateAt(taskIndex));
 			Text deleteText = new Text();
+			CheckBox checker = new CheckBox();
 			deleteText.setText("  X");
-			incGrid.add(deleteText, 3, taskIndex);
 			final int index = taskIndex;
 			deleteText.setOnMouseClicked(k -> deleteTaskAt(index));
-			CheckBox checker = new CheckBox();
-			incGrid.add(checker, 4, taskIndex);
 			checker.setOnAction(k -> completeTaskAt(index));
+			incGrid.add(newDateText, 2, taskIndex);
+			incGrid.add(deleteText, 3, taskIndex);
+			incGrid.add(checker, 4, taskIndex);
 		}
 		incompleteGridHolder.getChildren().add(incGrid);	
+	}
+	
+	public void updateTaskNoteView(Task task, GridPane grid, TaskList taskList){
+		TextField newTaskText = new TextField();
+		TextField newNoteText = new TextField();
+		newTaskText.setEditable(false);
+		newNoteText.setEditable(false);
+		newTaskText.setPrefSize(150, 25);
+		newNoteText.setPrefSize(225, 25);
+		newTaskText.setText(task.getTaskText());
+		newNoteText.setText(task.getNoteText());
+		grid.add(newTaskText, 0, taskList.getIndexOf(task));
+		grid.add(newNoteText, 1, taskList.getIndexOf(task));
+		
+		
 	}
 	
 	public void setUp(GridPane grid, ArrayList<Integer> columnSizes){
