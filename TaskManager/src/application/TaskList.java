@@ -11,7 +11,7 @@ public class TaskList {
 	public ArrayList<Task> taskList = new ArrayList<Task>();
 	private String documentName;
 	
-	public TaskList(String listName){
+	public TaskList(String listName) throws Exception{
 		documentName = listName + ".txt";
 		getSavedTasks();
 	}
@@ -41,19 +41,19 @@ public class TaskList {
 		return taskList.get(index).getDateText();
 	}
 	
-	public void addTask(Task task){
+	public void addTask(Task task) throws Exception{
 		taskList.add(task);
 		updateTextDoc();
 		
 	}
 	
-	public void deleteTaskAt(int index){
+	public void deleteTaskAt(int index) throws Exception{
 		taskList.remove(index);
 		updateTextDoc();
 	}
 	
 	
-	public void updateTaskList(ArrayList<TaskRow> updatedList){
+	public void updateTaskList(ArrayList<TaskRow> updatedList) throws Exception{
 		for (int i = 0; i < updatedList.size(); i++){
 			Task oldTask = getTaskAt(i);
 			TaskRow newInput = updatedList.get(i);
@@ -84,7 +84,7 @@ public class TaskList {
 		}
 	}
 	
-	public void updateTextDoc(){
+	public void updateTextDoc() throws Exception{
         clearDoc();
         for (Task t: taskList){
            addToDoc(t);
@@ -92,45 +92,34 @@ public class TaskList {
 
 	}
 	
-	public void clearDoc(){
-		 try {
+	public void clearDoc() throws Exception{
+		
 			 FileWriter writer = new FileWriter(documentName);
 			 writer.close();
-			 }
-		 catch (IOException e) {
-			 e.printStackTrace();
-			 }
+			 
 	}
-	public void addToDoc(Task task) {
-		try {
+	public void addToDoc(Task task) throws Exception {
+		
 			FileWriter writer = new FileWriter(documentName,
 					true);
 			writer.write("\r\n");
 			writer.write("&/&" + task.getTaskText() + " ");
 			writer.write("*/*" + task.getNoteText() + " ");
 			writer.write("!/!" + task.getDateText());
-		
 			writer.close();
-			} 
-		catch (IOException e) {
-			e.printStackTrace();
-			}
+			
 	 
 	    }
 	
-	public void getSavedTasks(){
-	    try {
+	public void getSavedTasks() throws Exception{
+	    
 	    	FileReader reader = new FileReader(documentName);
 	    	BufferedReader bufferedReader = new BufferedReader(reader);
 	    	String line;
 	    	while ((line = bufferedReader.readLine()) != null) {
-	    		readSaved(line);
+	    		addTaskFromLine(line);
 	    		}
 	    	reader.close();
-	 
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
 	}
 	
 	public int getIndexOf(Task task){
@@ -138,7 +127,7 @@ public class TaskList {
 	}
 	
 	//break this up-2 levels 
-	public void readSaved(String line){
+	public void addTaskFromLine(String line){
 		if (line.startsWith("&/&")){
 			int stopTask = line.indexOf("*/*");
 			int stopNote = line.indexOf("!/!");

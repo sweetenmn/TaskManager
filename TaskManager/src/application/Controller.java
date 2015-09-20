@@ -5,6 +5,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -54,26 +58,30 @@ public class Controller {
 	ArrayList<TaskRow> completeTaskRows;
 	ArrayList<CheckBox> checkBoxes;
 	ArrayList<Text> deleters;
-
+	JOptionPane dialogue;
 	
 	@FXML
 	public void initialize(){
 		formatter = DateTimeFormatter.ofPattern("MM/dd/uu");
 		hasDate = false;
-		incompleteTasks = new TaskList("IncompleteTasks");
-		completeTasks = new TaskList("CompleteTasks");
 		incompleteTaskRows = new ArrayList<TaskRow>();
 		completeTaskRows = new ArrayList<TaskRow>();
 		checkBoxes = new ArrayList<CheckBox>();
 		deleters = new ArrayList<Text>();
-		
-		updateViews();
+		try {
+			incompleteTasks = new TaskList("IncompleteTasks");
+			completeTasks = new TaskList("CompleteTasks");
+			updateViews();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Task file not found. Previously saved tasks have been lost.");
+		}
 	}
 	
 	
-	public void updateViews(){
+	public void updateViews() throws Exception{
 		updateIncompleteView();
 		updateCompleteView();
+	
 	}
 	
 	private String getCurrentDate(){
@@ -96,11 +104,15 @@ public class Controller {
 	
 	@FXML
 	public void saveNewTask(){
-		Task task = new Task(taskInput.getText(), notesInput.getText(), 
-				formattedDate());
-		incompleteTasks.addTask(task);
-		updateViews();
-		clearNewTask();
+		try {
+			Task task = new Task(taskInput.getText(), notesInput.getText(), 
+					formattedDate());
+			incompleteTasks.addTask(task);
+			updateViews();
+			clearNewTask();
+		} catch (Exception e) {
+			showErrorMessage();
+		}
 	}
 	
 	public String formattedDate(){
@@ -132,7 +144,7 @@ public class Controller {
 		completeGridHolder.getChildren().add(compGrid);
 	}
 
-	public void updateIncompleteView(){
+	public void updateIncompleteView() throws Exception{
 		incompleteGridHolder.getChildren().clear();
 		incompleteTaskRows.clear();
 		checkBoxes.clear();
@@ -150,7 +162,7 @@ public class Controller {
 		incompleteGridHolder.getChildren().add(incGrid);	
 	}
 	
-	public void addCheckBox(GridPane grid, int index){
+	public void addCheckBox(GridPane grid, int index) throws Exception{
 		CheckBox checker = new CheckBox();
 		checker.setOnAction(k -> completeTaskAt(index));
 		checker.setTranslateX(2);
@@ -158,7 +170,7 @@ public class Controller {
 		checkBoxes.add(checker);
 	}
 	
-	public void addDeleter(GridPane grid, int index){
+	public void addDeleter(GridPane grid, int index) throws Exception{
 		Text deleteText = new Text();
 		deleteText.setText(" X ");
 		deleteText.setUnderline(true);
@@ -205,9 +217,12 @@ public class Controller {
 	
 	@FXML
 	public void saveEdited(){
-		toggleEditing();
-		incompleteTasks.updateTaskList(incompleteTaskRows);
-		
+		try {
+			toggleEditing(); 
+			incompleteTasks.updateTaskList(incompleteTaskRows);
+		} catch (Exception e) {
+			showErrorMessage();
+		}
 	}
 	
 	public void toggleCheckable(){
@@ -223,13 +238,26 @@ public class Controller {
 	}
 	
 	public void completeTaskAt(int taskIndex){
-		completeTasks.addTask(incompleteTasks.getTaskAt(taskIndex));
-		incompleteTasks.deleteTaskAt(taskIndex);
-		updateViews();
+		try {
+			completeTasks.addTask(incompleteTasks.getTaskAt(taskIndex));
+			incompleteTasks.deleteTaskAt(taskIndex);
+			updateViews();
+		} catch (Exception e) {
+			showErrorMessage();
+		}
 	}
 	
 	public void deleteTaskAt(int taskIndex){
-		incompleteTasks.deleteTaskAt(taskIndex);
-		updateViews();
+		try {
+			incompleteTasks.deleteTaskAt(taskIndex);
+			updateViews();
+		} catch (Exception e) {
+			showErrorMessage();
+
+		}
+	}
+	
+	public void showErrorMessage(){
+		JOptionPane.showMessageDialog(null, "Task file not found. Please locate correct .txt file.");
 	}
 }
