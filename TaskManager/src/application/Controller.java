@@ -62,13 +62,9 @@ public class Controller {
 		}
 	}
 	
-	
-	public void updateViews() throws Exception{
-		updateIncompleteView();
-		updateCompleteView();
-	
-	}
-	
+	@FXML
+	void dateInputted(){hasDate = true;}
+
 	@FXML
 	public void addNewTask(){
 		if (newTaskPane.isVisible()){
@@ -77,9 +73,6 @@ public class Controller {
 			newTaskPane.setVisible(true);
 		}			
 	}
-
-	@FXML
-	void dateInputted(){hasDate = true;}
 	
 	@FXML
 	public void saveNewTask(){
@@ -89,17 +82,6 @@ public class Controller {
 			incompleteTasks.addTask(task);
 			updateViews();
 			clearNewTask();
-		} catch (Exception e) {
-			showErrorMessage();
-		}
-	}
-	
-	@FXML
-	public void clearCompleteTasks(){
-		try {
-			completeTasks.clear();
-			completeTasks.clearDoc();
-			updateViews();
 		} catch (Exception e) {
 			showErrorMessage();
 		}
@@ -120,6 +102,91 @@ public class Controller {
 		hasDate=false;
 	}
 	
+	@FXML
+	public void clearCompleteTasks(){
+		try {
+			completeTasks.clear();
+			completeTasks.clearDoc();
+			updateViews();
+		} catch (Exception e) {
+			showErrorMessage();
+		}
+	}
+	@FXML
+	public void viewCompleteTasks(){
+		clearNewTask();
+		incompletePane.setVisible(false);
+		newTaskPane.setVisible(false);
+		completePane.setVisible(true);
+	}
+	
+	@FXML
+	public void viewIncompleteTasks(){
+		completePane.setVisible(false);
+		incompletePane.setVisible(true);
+	}
+	
+	@FXML
+	public void saveEdited(){
+		try {
+			toggleEditing(); 
+			incompleteTasks.updateTaskList(incompleteTaskRows);
+		} catch (Exception e) {
+			showErrorMessage();
+		}
+	}
+	
+	@FXML
+	public void toggleEditing(){
+		saveChangesButton.setVisible(!saveChangesButton.isVisible());
+		for (TaskRow t: incompleteTaskRows){
+			t.toggleEditable();
+		}
+		toggleCheckable();
+		toggleDeleteable();
+		clearNewTask();
+		newTaskPane.setVisible(false);
+		addNewTaskButton.setVisible(!addNewTaskButton.isVisible());
+	}
+	
+	public void toggleCheckable(){
+		for (CheckBox c: checkBoxes){
+			c.setVisible(!c.isVisible());
+		}
+	}
+	
+	public void toggleDeleteable(){
+		for (Text t: deleters){
+			t.setVisible(!t.isVisible());
+		}
+	}
+	
+	
+	public void completeTaskAt(int taskIndex){
+		try {
+			incompleteTasks.setDateOfCompletion(taskIndex);
+			completeTasks.addTask(incompleteTasks.getTaskAt(taskIndex));
+			incompleteTasks.deleteTaskAt(taskIndex);
+			updateViews();
+		} catch (Exception e) {
+			showErrorMessage();
+		}
+	}
+	
+	public void deleteTaskAt(int taskIndex){
+		try {
+			incompleteTasks.deleteTaskAt(taskIndex);
+			updateViews();
+		} catch (Exception e) {
+			showErrorMessage();
+
+		}
+	}
+	
+	public void updateViews() throws Exception{
+		updateIncompleteView();
+		updateCompleteView();
+	}
 	public void updateCompleteView(){
 		completeGridHolder.getChildren().clear();
 		completeTaskRows.clear();
@@ -150,6 +217,12 @@ public class Controller {
 		incompleteGridHolder.getChildren().add(incGrid);	
 	}
 	
+	public void setUp(GridPane grid){
+		grid.setGridLinesVisible(true);
+		grid.setLayoutX(5);
+		grid.setLayoutY(5);
+	}
+	
 	public void addCheckBox(GridPane grid, int index) throws Exception{
 		CheckBox checker = new CheckBox();
 		checker.setOnAction(k -> completeTaskAt(index));
@@ -166,87 +239,9 @@ public class Controller {
 		grid.add(deleteText, 3, index);
 		deleters.add(deleteText);
 	}
-
-	
-	public void setUp(GridPane grid){
-		grid.setGridLinesVisible(true);
-		grid.setLayoutX(5);
-		grid.setLayoutY(5);
-	}
-	
-	
-	@FXML
-	public void viewCompleteTasks(){
-		clearNewTask();
-		incompletePane.setVisible(false);
-		newTaskPane.setVisible(false);
-		completePane.setVisible(true);
-	}
-	
-	@FXML
-	public void viewIncompleteTasks(){
-		completePane.setVisible(false);
-		incompletePane.setVisible(true);
-	}
-
-	
-	@FXML
-	public void toggleEditing(){
-		saveChangesButton.setVisible(!saveChangesButton.isVisible());
-		for (TaskRow t: incompleteTaskRows){
-			t.toggleEditable();
-		}
-		toggleCheckable();
-		toggleDeleteable();
-		clearNewTask();
-		newTaskPane.setVisible(false);
-		addNewTaskButton.setVisible(!addNewTaskButton.isVisible());
-	}
-	
-	@FXML
-	public void saveEdited(){
-		try {
-			toggleEditing(); 
-			incompleteTasks.updateTaskList(incompleteTaskRows);
-		} catch (Exception e) {
-			showErrorMessage();
-		}
-	}
-	
-	public void toggleCheckable(){
-		for (CheckBox c: checkBoxes){
-			c.setVisible(!c.isVisible());
-		}
-	}
-	
-	public void toggleDeleteable(){
-		for (Text t: deleters){
-			t.setVisible(!t.isVisible());
-		}
-	}
-	
-	public void completeTaskAt(int taskIndex){
-		try {
-			incompleteTasks.setDateOfCompletion(taskIndex);
-			completeTasks.addTask(incompleteTasks.getTaskAt(taskIndex));
-			incompleteTasks.deleteTaskAt(taskIndex);
-			updateViews();
-		} catch (Exception e) {
-			showErrorMessage();
-		}
-	}
-	
-	public void deleteTaskAt(int taskIndex){
-		try {
-			incompleteTasks.deleteTaskAt(taskIndex);
-			updateViews();
-		} catch (Exception e) {
-			showErrorMessage();
-
-		}
-	}
 	
 	public void showErrorMessage(){
 		JOptionPane.showMessageDialog(null, "Task file not found. Please locate correct .txt file.");
 	}
+
 }

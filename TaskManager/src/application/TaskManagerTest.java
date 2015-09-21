@@ -1,15 +1,12 @@
 package application;
 
 import static org.junit.Assert.*;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
-
 import javafx.application.Application;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -52,7 +49,8 @@ public class TaskManagerTest {
 		updateTextTest(task);
 	}
 	
-	public void textCheck(Task task, String expectedTask, String expectedNote, String expectedDate){
+	public void textCheck(Task task, String expectedTask, String expectedNote, 
+			String expectedDate){
 		assertEquals(task.getTaskText(), expectedTask);
 		assertEquals(task.getNoteText(), expectedNote);
 		assertEquals(task.getDateText(), expectedDate);
@@ -110,15 +108,11 @@ public class TaskManagerTest {
 	}
 	
 	@Test
-	public void fileTest(){
+	public void fileTest() throws Exception{
 		Task task = new Task("a", "b", "c");
-		try {
-			testList.addTask(task);
-			testList.addTask(task);
-			assertEquals(countLines(), testList.getSize());
-		} catch (Exception e) {
-			System.out.println("fileTest failed. File not found or was unable to be written.");
-		}
+		testList.addTask(task);
+		testList.addTask(task);
+		assertEquals(countLines(), testList.getSize());
 	}
 	public int countLines() throws Exception{
     	FileReader reader = new FileReader("test.txt");
@@ -133,6 +127,18 @@ public class TaskManagerTest {
     	reader.close();
     	return count;
 	}
+	
+	@Test
+	public void deleteTest() throws Exception{
+		testList.clear();
+		testList.clearDoc();
+		Task task = new Task("a", "b", "c");
+		testList.addTask(task);
+		assertEquals(1, countLines());
+		testList.deleteTaskAt(0);
+		assertEquals(0, countLines());
+	}
+	
 	
 	@Test
 	public void updateDocTest() throws Exception{
@@ -172,29 +178,26 @@ public class TaskManagerTest {
 	}
 	
 	@Test
-	public void deleteTest() throws Exception{
-		testList.clear();
-		testList.clearDoc();
-		Task task = new Task("a", "b", "c");
-		testList.addTask(task);
-		assertEquals(1, countLines());
-		testList.deleteTaskAt(0);
-		assertEquals(0, countLines());
-	}
-	
-	@Test
 	public void updateTaskListTest() throws Exception{
 		testList.clear();
 		testList.clearDoc();
+		grid.getChildren().clear();
 		ArrayList<TaskRow> rows = new ArrayList<TaskRow>();
 		Task task = new Task("1", "2", "3");
 		testList.addTask(task);
-		testList.addTask(task);
-		testList.addTask(task);
-	//TaskRow row = new TaskRow()
+		TaskRow row = new TaskRow(grid, task, 0);
+		row.addToGrid();
+		rows.add(row);
+		testChanged(task, row);
+		testList.updateTaskList(rows);
+		assertEquals(task.getTaskText(), row.getTaskFieldText());
 		
-		//here
-		
+	}
+	
+	public void testChanged(Task task, TaskRow row){
+		assertEquals(task.getTaskText(), row.getTaskFieldText());
+		row.getTaskField().setText("changed");
+		assertFalse(task.getTaskText().equals(row.getTaskFieldText()));
 	}
 	
 

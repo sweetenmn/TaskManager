@@ -97,7 +97,7 @@
                         <Text layoutX="1.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Due date:" />
                      </children>
                   </Pane>
-                  <ImageView fitHeight="22.0" fitWidth="28.0" layoutX="446.0" layoutY="61.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="22.0" fitWidth="28.0" layoutX="447.0" layoutY="61.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../delete.png" />
                      </image>

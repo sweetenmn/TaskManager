@@ -21,33 +21,41 @@ public class TaskList {
 	public int getSize(){
 		return taskList.size();
 	}
-	
-	public String getTaskTextAt(int index){
-		return taskList.get(index).getTaskText();
-	}
 	public Task getTaskAt(int index){
 		return taskList.get(index);
 	}
-	
-	
+	public String getTaskTextAt(int index){
+		return taskList.get(index).getTaskText();
+	}
 	public String getNoteAt(int index){
 		return taskList.get(index).getNoteText();
 	}
 	public String getDateAt(int index){
 		return taskList.get(index).getDateText();
 	}
-	
 	public void addTask(Task task) throws Exception{
 		taskList.add(task);
 		updateTextDoc();
-		
 	}
-	
 	public void deleteTaskAt(int index) throws Exception{
 		taskList.remove(index);
 		updateTextDoc();
 	}
+	public int getIndexOf(Task task){
+		return taskList.indexOf(task);
+	}
 	
+	public void updateTextDoc() throws Exception{
+        clearDoc();
+        for (Task t: taskList){
+           addToDoc(t);
+        }
+	}
+	
+	public void clearDoc() throws Exception{
+		FileWriter writer = new FileWriter(documentName);
+		writer.close();
+	}
 	
 	public void updateTaskList(ArrayList<TaskRow> updatedList) throws Exception{
 		for (int i = 0; i < updatedList.size(); i++){
@@ -84,45 +92,24 @@ public class TaskList {
 		taskList.get(index).addCompletedDateText();
 	}
 	
-	public void updateTextDoc() throws Exception{
-        clearDoc();
-        for (Task t: taskList){
-           addToDoc(t);
-        }
-
-	}
-	
-	public void clearDoc() throws Exception{
-		FileWriter writer = new FileWriter(documentName);
-		writer.close();
-			 
-	}
 	public void addToDoc(Task task) throws Exception {
-		
-			FileWriter writer = new FileWriter(documentName,
-					true);
-			writer.write("\n");
-			writer.write("&/&" + task.getTaskText());
-			writer.write("*/*" + task.getNoteText());
-			writer.write("!/!" + task.getDateText());
-			writer.close();
-			
-	 
-	    }
+		FileWriter writer = new FileWriter(documentName,
+				true);
+		writer.write("\n");
+		writer.write("&/&" + task.getTaskText());
+		writer.write("*/*" + task.getNoteText());
+		writer.write("!/!" + task.getDateText());
+		writer.close();
+	}
 	
 	public void getSavedTasks() throws Exception{
-	    
-	    	FileReader reader = new FileReader(documentName);
-	    	BufferedReader bufferedReader = new BufferedReader(reader);
-	    	String line;
-	    	while ((line = bufferedReader.readLine()) != null) {
-	    		addTaskFromLine(line);
-	    		}
-	    	reader.close();
-	}
-	
-	public int getIndexOf(Task task){
-		return taskList.indexOf(task);
+	    FileReader reader = new FileReader(documentName);
+	    BufferedReader bufferedReader = new BufferedReader(reader);
+	    String line;
+	    while ((line = bufferedReader.readLine()) != null) {
+	    	addTaskFromLine(line);
+	    	}
+	    reader.close();
 	}
 	
 	public void addTaskFromLine(String line){
@@ -134,10 +121,7 @@ public class TaskList {
 					stopNote));
 			String dateText = (line.substring(stopNote + 3));
 			taskList.add(new Task(taskText, noteText, dateText));
-			
-			
 		}
 	}
 	
-
 }
