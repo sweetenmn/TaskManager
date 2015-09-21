@@ -21,9 +21,10 @@ public class TaskRow {
 		dateText = new TextField();
 	}
 	
-	public void addTaskNoteToGrid(){
+	public void addToGrid(){
 		addTaskField();
 		addNoteField();
+		addDateField();
 	}
 	
 	private void addTaskField(){
@@ -42,11 +43,11 @@ public class TaskRow {
 		
 	}
 	
-	public void addDateField(String date){
+	public void addDateField(){
 		dateText = new TextField();
 		dateText.setEditable(false);
 		dateText.setPrefSize(65, 25);
-		dateText.setText(date);
+		dateText.setText(task.getDateText());
 		grid.add(dateText, 2, index);
 	}
 	
@@ -60,5 +61,8 @@ public class TaskRow {
 	public String getNoteFieldText(){return noteText.getText();}
 	public String getDateFieldText(){return dateText.getText();}
 	
+	public TextField getTaskField(){return taskText;}
+	public TextField getNoteField(){return noteText;}
+	public TextField getDateField(){return dateText;}
 
 }

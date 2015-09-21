@@ -146,6 +146,11 @@
                       <AnchorPane fx:id="completeGridHolder" prefHeight="329.0" prefWidth="472.0" />
                     </content>
                   </ScrollPane>
+                  <Button fx:id="clearComplete" blendMode="MULTIPLY" layoutX="10.0" layoutY="411.0" mnemonicParsing="false" onAction="#clearCompleteTasks" prefHeight="25.0" prefWidth="143.0" text="Clear Completed Tasks">
+                     <effect>
+                        <Reflection fraction="0.35" />
+                     </effect>
+                  </Button>
                </children>
             </Pane>
          </children>

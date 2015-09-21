@@ -1,12 +1,8 @@
 package application;
 
 import java.time.format.DateTimeFormatter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import javafx.fxml.FXML;
@@ -32,21 +28,10 @@ public class Controller {
 	@FXML
 	AnchorPane completeGridHolder;
 	@FXML
-	Button incompleteTasksButton;
+	Button incompleteTasksButton, completeTasksButton, addNewTaskButton, saveNewTaskButton,
+		editButton, saveChangesButton, clearComplete;
 	@FXML
-	Button completeTasksButton;
-	@FXML
-	Button addNewTaskButton;
-	@FXML
-	Button saveNewTaskButton;
-	@FXML
-	Button editButton;
-	@FXML
-	Button saveChangesButton;
-	@FXML
-	TextField taskInput;
-	@FXML
-	TextField notesInput;
+	TextField taskInput, notesInput;
 	@FXML
 	DatePicker dueDatePicker;
 	
@@ -84,12 +69,6 @@ public class Controller {
 	
 	}
 	
-	private String getCurrentDate(){
-		   DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
-		   Calendar cal = Calendar.getInstance();
-		   return dateFormat.format(cal.getTime());
-	}
-	
 	@FXML
 	public void addNewTask(){
 		if (newTaskPane.isVisible()){
@@ -110,6 +89,17 @@ public class Controller {
 			incompleteTasks.addTask(task);
 			updateViews();
 			clearNewTask();
+		} catch (Exception e) {
+			showErrorMessage();
+		}
+	}
+	
+	@FXML
+	public void clearCompleteTasks(){
+		try {
+			completeTasks.clear();
+			completeTasks.clearDoc();
+			updateViews();
 		} catch (Exception e) {
 			showErrorMessage();
 		}
@@ -137,8 +127,7 @@ public class Controller {
 		setUp(compGrid);
 		for (int taskIndex = 0; taskIndex < completeTasks.getSize(); taskIndex++){
 			TaskRow taskRow = new TaskRow(compGrid, completeTasks.getTaskAt(taskIndex), taskIndex);
-			taskRow.addTaskNoteToGrid();
-			taskRow.addDateField(getCurrentDate());
+			taskRow.addToGrid();
 			completeTaskRows.add(taskRow);
 		}
 		completeGridHolder.getChildren().add(compGrid);
@@ -153,8 +142,7 @@ public class Controller {
 		setUp(incGrid);
 		for (int taskIndex = 0; taskIndex < incompleteTasks.getSize(); taskIndex++){
 			TaskRow taskRow = new TaskRow(incGrid, incompleteTasks.getTaskAt(taskIndex), taskIndex);
-			taskRow.addTaskNoteToGrid();
-			taskRow.addDateField(incompleteTasks.getDateAt(taskIndex));
+			taskRow.addToGrid();
 			incompleteTaskRows.add(taskRow);
 			addDeleter(incGrid, taskIndex);
 			addCheckBox(incGrid, taskIndex);
@@ -239,6 +227,7 @@ public class Controller {
 	
 	public void completeTaskAt(int taskIndex){
 		try {
+			incompleteTasks.setDateOfCompletion(taskIndex);
 			completeTasks.addTask(incompleteTasks.getTaskAt(taskIndex));
 			incompleteTasks.deleteTaskAt(taskIndex);
 			updateViews();

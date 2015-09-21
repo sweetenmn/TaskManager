@@ -3,12 +3,11 @@ package application;
 import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.FileWriter;
 
 public class TaskList {
 	
-	public ArrayList<Task> taskList = new ArrayList<Task>();
+	private ArrayList<Task> taskList = new ArrayList<Task>();
 	private String documentName;
 	
 	public TaskList(String listName) throws Exception{
@@ -16,6 +15,9 @@ public class TaskList {
 		getSavedTasks();
 	}
 	
+	public void clear(){
+		taskList.clear();
+	}
 	public int getSize(){
 		return taskList.size();
 	}
@@ -27,12 +29,6 @@ public class TaskList {
 		return taskList.get(index);
 	}
 	
-	public void updateTaskText(int index, String string){
-		getTaskAt(index).updateTaskText(string);
-	}
-	public void updateNoteText(int index, String string){
-		getTaskAt(index).updateNoteText(string);
-	}
 	
 	public String getNoteAt(int index){
 		return taskList.get(index).getNoteText();
@@ -84,6 +80,10 @@ public class TaskList {
 		}
 	}
 	
+	public void setDateOfCompletion(int index){
+		taskList.get(index).addCompletedDateText();
+	}
+	
 	public void updateTextDoc() throws Exception{
         clearDoc();
         for (Task t: taskList){
@@ -93,18 +93,17 @@ public class TaskList {
 	}
 	
 	public void clearDoc() throws Exception{
-		
-			 FileWriter writer = new FileWriter(documentName);
-			 writer.close();
+		FileWriter writer = new FileWriter(documentName);
+		writer.close();
 			 
 	}
 	public void addToDoc(Task task) throws Exception {
 		
 			FileWriter writer = new FileWriter(documentName,
 					true);
-			writer.write("\r\n");
-			writer.write("&/&" + task.getTaskText() + " ");
-			writer.write("*/*" + task.getNoteText() + " ");
+			writer.write("\n");
+			writer.write("&/&" + task.getTaskText());
+			writer.write("*/*" + task.getNoteText());
 			writer.write("!/!" + task.getDateText());
 			writer.close();
 			
@@ -126,7 +125,6 @@ public class TaskList {
 		return taskList.indexOf(task);
 	}
 	
-	//break this up-2 levels 
 	public void addTaskFromLine(String line){
 		if (line.startsWith("&/&")){
 			int stopTask = line.indexOf("*/*");
